@@ -1,0 +1,74 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-centered">
+      <h3><% @space = Space.get(@space_id) %>
+      <%= @space.title %></h3>
+      <% @dates =[] %>
+      <% @space.available_dates.each do |date| %>
+         <% if date != :booked %>
+          <% @dates << date.strftime("%Y-%m-%d") %>
+         <%else%>
+          <% @dates << false %>
+         <% end %>  
+      <% end %>
+      <%= @dates %>
+      <form method="post" style="float:left"action="/spaces/confirmations/request">
+        <p>Dates of request</p>
+        <div class="form-group">
+          <label for="check_in_date">From:</label>
+          <input  name="check_in_date" id="check_in_date" class="form-control" required/>
+        </div>
+        <div class="form-group">
+          <label for="check_out_date">To:</label>
+          <input type="date" name="check_out_date" id="check_out_date" class="form-control" required/>
+        </div>
+        <input type="hidden" name ="space_id" value ="<%= @space_id %>">
+        <input type='submit' value='Request to rent!' class="btn btn-default">
+      </table>
+    </form>
+
+  </div>
+</div>
+</div>
+
+
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<script>
+  var dateRange = '<%= @dates %>'
+  
+  var date1 = new Date;
+    date1.setHours(0, 0, 0, 0);
+    date1.setDate(1);
+    var date2 = new Date;
+    date2.setHours(0, 0, 0, 0);
+    date2.setDate(5);
+    $("#check_in_date").datepicker({
+      
+      beforeShowDay: function(date) {
+        var string = jQuery.datepicker.formatDate('yy-mm-dd', date);
+        return [ dateRange.indexOf(string) == -1]
+      }
+    });
+  
+  $( "#check_in_date" ).datepicker({
+      defaultDate: "+1w",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#check_out_date" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#check_out_date" ).datepicker({
+      defaultDate: "+1w",
+      changeMonth: true,
+      numberOfMonths: 1,
+      onClose: function( selectedDate ) {
+        $( "#check_in_date" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
+
+  
+</script>
+
